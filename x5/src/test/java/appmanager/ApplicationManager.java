@@ -1,6 +1,5 @@
 package appmanager;
 
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -22,9 +21,8 @@ public class ApplicationManager {
 
   private HelperSession helperSession;
   private HelperNavigation helperNavigation;
-  private HelperGroup helperGroup;
-  private HelperContact helperContact;
   private HelperDbOracle helperDb;
+  private HelperCC helperCC;
   private String browser;
 
   public ApplicationManager(String browser) {
@@ -36,7 +34,7 @@ public class ApplicationManager {
     String target = System.getProperty("target", "local");
     properties.load(new FileReader(new File(String.format("src/test/resources/%s.properties", target))));
 
-    helperDb = new HelperDbOracle(); // Если нет подключения к БД, то упадем раньше, чем начнется инициализация всего остального
+//    helperDb = new HelperDbOracle(); // Если нет подключения к БД, то упадем раньше, чем начнется инициализация всего остального
 
     if ("".equals(properties.getProperty("selenium.server"))) {
       if (browser.equals(BrowserType.FIREFOX)) {
@@ -54,33 +52,14 @@ public class ApplicationManager {
 
     wd.manage().timeouts().implicitlyWait(0, TimeUnit.SECONDS);
     wd.get(properties.getProperty("web.baseUrl"));
-    helperGroup = new HelperGroup(wd);
-    helperContact = new HelperContact(wd);
+    helperCC = new HelperCC(wd);
     helperNavigation = new HelperNavigation(wd);
     helperSession = new HelperSession(wd);
     helperSession.login(properties.getProperty("web.adminLogin"), properties.getProperty("web.adminPassword"));
   }
 
-  private void login(String username, String password) {
-    wd.findElement(By.name("user")).click();
-    wd.findElement(By.name("user")).clear();
-    wd.findElement(By.name("user")).sendKeys(username);
-    wd.findElement(By.name("pass")).click();
-    wd.findElement(By.name("pass")).clear();
-    wd.findElement(By.name("pass")).sendKeys(password);
-    wd.findElement(By.xpath("//form[@id='LoginForm']/input[3]")).click();
-  }
-
   public void stop() {
     wd.quit();
-  }
-
-  public HelperGroup group() {
-    return helperGroup;
-  }
-
-  public HelperContact contact() {
-    return helperContact;
   }
 
   public HelperNavigation goTo() {
@@ -89,5 +68,9 @@ public class ApplicationManager {
 
   public HelperDbOracle db() {
     return helperDb;
+  }
+
+  public HelperCC cc() {
+    return helperCC;
   }
 }

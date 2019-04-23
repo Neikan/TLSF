@@ -9,19 +9,22 @@ public class HelperNavigation extends HelperBase{
     super(wd);
   }
 
-  public void groupPage() {//Оптимизированы переходы между страницами
-    if (isElementPresent(By.tagName("h1"))
-            && wd.findElement(By.tagName("h1")).getText().equals("Группы")
-            && isElementPresent(By.name("new"))) {
-      return;
-    }
-    click(By.linkText("Группы"));
+  public void docs() {
+    wd.findElement(By.id("tab_button_0-btnIconEl")).click();
   }
 
-  public void homePage() {//Оптимизированы переходы между страницами
-    if (isElementPresent(By.id("maintable"))) {
-      return;
-    }
-    click(By.linkText("Главная"));
+  public void tasks() {
+    wd.findElement(By.id("tab_button_1-btnIconEl")).click();
   }
+
+  public void control() {
+    wd.findElement(By.id("tab_button_2-btnIconEl")).click();
+  }
+
+  public void reports() {
+    wd.findElement(By.id("tab_button_3-btnIconEl")).click();
+  }
+
+
+
 }
