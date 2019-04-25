@@ -1,21 +1,26 @@
 package appmanager;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.NoAlertPresentException;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.Actions;
 
 import java.io.File;
+import java.net.MalformedURLException;
 
 public class HelperBase {
+  protected ApplicationManager app;
   protected WebDriver wd;
 
-  public HelperBase(WebDriver wd) {
-    this.wd = wd;
+  public HelperBase(ApplicationManager app) throws MalformedURLException {
+    this.app = app;
+    this.wd = app.getDriver();
   }
 
   protected void click(By locator) {
     wd.findElement(locator).click();
+  }
+
+  protected void doubleClick(By locator) {
+    new Actions(wd).doubleClick(wd.findElement(locator)).perform();
   }
 
   protected void type(By locator, String text) {

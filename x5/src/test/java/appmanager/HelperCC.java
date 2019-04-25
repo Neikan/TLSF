@@ -1,11 +1,11 @@
 package appmanager;
 
-import org.openqa.selenium.WebDriver;
+import java.net.MalformedURLException;
 
 public class HelperCC extends HelperBase {
 
-  public HelperCC(WebDriver wd) {
-    super(wd);
+  public HelperCC(ApplicationManager app) throws MalformedURLException {
+    super(app);
   }
 
 

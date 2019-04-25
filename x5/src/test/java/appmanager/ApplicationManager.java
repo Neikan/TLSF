@@ -11,19 +11,20 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 
 public class ApplicationManager {
   private final Properties properties;
-  WebDriver wd;
+  private WebDriver wd;
 
+  private String browser;
   private HelperSession helperSession;
   private HelperNavigation helperNavigation;
   private HelperDbOracle helperDb;
   private HelperCC helperCC;
-  private String browser;
+
 
   public ApplicationManager(String browser) {
     this.browser = browser;
@@ -33,44 +34,63 @@ public class ApplicationManager {
   public void init() throws IOException {
     String target = System.getProperty("target", "local");
     properties.load(new FileReader(new File(String.format("src/test/resources/%s.properties", target))));
-
-//    helperDb = new HelperDbOracle(); // Если нет подключения к БД, то упадем раньше, чем начнется инициализация всего остального
-
-    if ("".equals(properties.getProperty("selenium.server"))) {
-      if (browser.equals(BrowserType.FIREFOX)) {
-        wd = new FirefoxDriver();
-      } else if (browser.equals(BrowserType.CHROME)) {
-        wd = new ChromeDriver();
-      } else if (browser.equals(BrowserType.IE)) {
-        wd = new InternetExplorerDriver();
-      }
-    } else {
-      DesiredCapabilities capabilities = new DesiredCapabilities();
-      capabilities.setBrowserName(browser);
-      wd = new RemoteWebDriver(new URL(properties.getProperty("selenium.server")), capabilities);
-    }
-
-    wd.manage().timeouts().implicitlyWait(0, TimeUnit.SECONDS);
-    wd.get(properties.getProperty("web.baseUrl"));
-    helperCC = new HelperCC(wd);
-    helperNavigation = new HelperNavigation(wd);
-    helperSession = new HelperSession(wd);
-    helperSession.login(properties.getProperty("web.adminLogin"), properties.getProperty("web.adminPassword"));
+//    session().login(properties.getProperty("web.adminLogin"), properties.getProperty("web.adminPassword"));
+//    helperSession.login(properties.getProperty("web.adminLogin"), properties.getProperty("web.adminPassword"));
+    //helperDb = new HelperDbOracle(); // Если нет подключения к БД, то упадем раньше, чем начнется инициализация всего остального
   }
 
   public void stop() {
-    wd.quit();
+    if (wd != null) {
+      wd.quit();
+    }
   }
 
-  public HelperNavigation goTo() {
-    return helperNavigation;
+  public String getProperty(String key) {
+    return properties.getProperty(key);
+  }
+
+  public WebDriver getDriver() throws MalformedURLException {
+    if (wd == null) {
+      if ("".equals(properties.getProperty("selenium.server"))) {
+        if (browser.equals(BrowserType.FIREFOX)) {
+          wd = new FirefoxDriver();
+        } else if (browser.equals(BrowserType.CHROME)) {
+          wd = new ChromeDriver();
+        } else if (browser.equals(BrowserType.IE)) {
+          wd = new InternetExplorerDriver();
+        }
+      } else {
+        DesiredCapabilities capabilities = new DesiredCapabilities();
+        capabilities.setBrowserName(browser);
+        wd = new RemoteWebDriver(new URL(properties.getProperty("selenium.server")), capabilities);
+      }
+    }
+    return wd;
   }
 
   public HelperDbOracle db() {
     return helperDb;
   }
 
-  public HelperCC cc() {
+  public HelperNavigation goTo() throws MalformedURLException {
+    if (helperNavigation == null) {
+      helperNavigation = new HelperNavigation(this);
+    }
+    return helperNavigation;
+  }
+
+  public HelperCC cc() throws MalformedURLException {
+    if (helperCC == null) {
+      helperCC = new HelperCC(this);
+    }
     return helperCC;
   }
+
+  public HelperSession session() throws MalformedURLException {
+    if (helperSession == null) {
+      helperSession = new HelperSession(this);
+    }
+    return helperSession;
+  }
+
 }

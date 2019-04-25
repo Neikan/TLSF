@@ -1,17 +1,19 @@
 package appmanager;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
+
+import java.net.MalformedURLException;
 
 public class HelperSession extends HelperBase {
 
-  public HelperSession(WebDriver wd) {
-    super(wd);
+  public HelperSession(ApplicationManager app) throws MalformedURLException {
+    super(app);
   }
 
-  public void login(String username, String password) {
-    type(By.name("otds_username"), username);
-    type(By.name("otds_password"), password);
+  public void loginAdmin() {
+    wd.get(app.getProperty("web.baseUrl"));
+    type(By.name("otds_username"), app.getProperty("web.adminLogin"));
+    type(By.name("otds_password"), app.getProperty("web.adminPassword"));
     click(By.cssSelector("input.button"));
   }
 

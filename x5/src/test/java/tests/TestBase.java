@@ -14,9 +14,10 @@ import java.util.Arrays;
 
 public class TestBase {
 
-  Logger logger = LoggerFactory.getLogger(TestBase.class);
   protected static final ApplicationManager app
           = new ApplicationManager(System.getProperty("browser", BrowserType.CHROME));
+
+  Logger logger = LoggerFactory.getLogger(TestBase.class);
 
   @BeforeSuite
   public void setUp() throws Exception {
